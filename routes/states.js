@@ -1,53 +1,67 @@
+const mongoose = require("mongoose");
 const express = require("express");
+const Joi = require("joi");
 const router = express.Router();
 
-const states = [
-  { state_id: 1, name: "Madhya Pradesh" },
-  { state_id: 2, name: "Uttar Pradesh" },
-  { state_id: 3, name: "Himachal Pradesh" },
-  { state_id: 4, name: "Andhra Pradesh" },
-];
+const State = mongoose.model(
+  "State",
+  new mongoose.Schema({
+    state_name: {
+      type: String,
+      required: true,
+      uppercase: true,
+      minLength: 2,
+      maxLength: 50,
+    },
+  })
+);
 
-router.get("/", (req, res) => {
+router.get("/", async (req, res) => {
+  const states = await State.find().sort("state_name");
   res.send(states);
 });
 
-router.get("/:state_id", (req, res) => {
-  const state = states.find(
-    (s) => s.state_id === parseInt(req.params.state_id)
-  );
-  if (!state) return res.status(404).send("State with the given id not found.");
-  res.send(state);
-});
-
-router.post("/", (req, res) => {
+router.post("/", async (req, res) => {
   const { error } = validateState(req.body);
   if (error) return res.status(404).send(error.details[0].message);
 
-  const state = {
-    id: states.length + 1,
-    name: req.body.name,
-  };
-  states.push(state);
+  let state = new State({
+    state_name: req.body.name,
+  });
+  state = await state.save();
   res.send(state);
 });
 
-router.put("/:state_id", (req, res) => {
-  const state = states.find(
-    (s) => s.state_id === parseInt(req.params.state_id)
+router.put("/:state_id", async (req, res) => {
+  const { error } = validateState(req.body);
+  if (error) return res.status(404).send(error.details[0].message);
+
+  const state = await State.findByIdAndUpdate(
+    req.params.state_id,
+    { state_name: req.body.name },
+    {
+      new: true,
+    }
   );
-  if (!state) return res.status(404).send(error.details[0].message);
-  state.name = req.body.name;
+
+  if (!state)
+    return res.status(404).send("The state with the given id does not exist.");
   res.send(state);
 });
 
-router.delete("/:state_id", (req, res) => {
-  const state = states.find(
-    (s) => s.state_id === parseInt(req.params.state_id)
-  );
+router.delete("/:state_id", async (req, res) => {
+  const state = await State.findByIdAndRemove(req.params.state_id);
+
   if (!state) return res.status(404).send("State with the given id not found.");
-  const index = states.indexOf(state);
-  states.splice(index, 1);
+
+  res.send(state);
+});
+
+router.get("/:state_id", async (req, res) => {
+  const state = await State.findById(req.params.state_id);
+
+  if (!state) return res.status(404).send("State with the given id not found.");
+
   res.send(state);
 });
 
