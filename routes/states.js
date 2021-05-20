@@ -1,20 +1,7 @@
 const mongoose = require("mongoose");
 const express = require("express");
-const Joi = require("joi");
+const { State, validate } = require("../models/state");
 const router = express.Router();
-
-const State = mongoose.model(
-  "State",
-  new mongoose.Schema({
-    state_name: {
-      type: String,
-      required: true,
-      uppercase: true,
-      minLength: 2,
-      maxLength: 50,
-    },
-  })
-);
 
 router.get("/", async (req, res) => {
   const states = await State.find().sort("state_name");
@@ -22,7 +9,7 @@ router.get("/", async (req, res) => {
 });
 
 router.post("/", async (req, res) => {
-  const { error } = validateState(req.body);
+  const { error } = validate(req.body);
   if (error) return res.status(404).send(error.details[0].message);
 
   let state = new State({
@@ -33,7 +20,7 @@ router.post("/", async (req, res) => {
 });
 
 router.put("/:state_id", async (req, res) => {
-  const { error } = validateState(req.body);
+  const { error } = validate(req.body);
   if (error) return res.status(404).send(error.details[0].message);
 
   const state = await State.findByIdAndUpdate(
@@ -64,13 +51,5 @@ router.get("/:state_id", async (req, res) => {
 
   res.send(state);
 });
-
-// Validate state request-------
-function validateState(state) {
-  const schema = {
-    name: Joi.string().min(2).required(),
-  };
-  return Joi.validate(state, schema);
-}
 
 module.exports = router;
