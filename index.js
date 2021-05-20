@@ -61,3 +61,6 @@ function validateState(state) {
   };
   return Joi.validate(course, schema);
 }
+
+const port = 6000;
+app.listen(port, () => console.log(`Listening on port ${port}...`));
