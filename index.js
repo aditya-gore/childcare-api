@@ -2,6 +2,8 @@ const Joi = require("joi");
 const express = require("express");
 const app = express();
 
+app.use(express.json());
+
 const states = [
   { state_id: 1, name: "Madhya Pradesh" },
   { state_id: 2, name: "Uttar Pradesh" },
@@ -43,7 +45,7 @@ app.put("/api/states/:state_id", (req, res) => {
   );
   if (!state) return res.status(404).send(error.details[0].message);
   state.name = req.body.name;
-  res.send(course);
+  res.send(state);
 });
 
 app.delete("/api/states/:state_id", (req, res) => {
@@ -53,13 +55,15 @@ app.delete("/api/states/:state_id", (req, res) => {
   if (!state) return res.status(404).send("State with the given id not found.");
   const index = states.indexOf(state);
   states.splice(index, 1);
+  res.send(state);
 });
+
 // Validate state request-------
 function validateState(state) {
   const schema = {
     name: Joi.string().min(2).required(),
   };
-  return Joi.validate(course, schema);
+  return Joi.validate(state, schema);
 }
 
 const port = 6000;
