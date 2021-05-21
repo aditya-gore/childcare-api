@@ -1,4 +1,4 @@
-const mongoose = require("mongoose");
+const auth = require("../middleware/auth");
 const express = require("express");
 const { State, validate } = require("../models/state");
 const router = express.Router();
@@ -36,7 +36,7 @@ router.put("/:state_id", async (req, res) => {
   res.send(state);
 });
 
-router.delete("/:state_id", async (req, res) => {
+router.delete("/:state_id", auth, async (req, res) => {
   const state = await State.findByIdAndRemove(req.params.state_id);
 
   if (!state) return res.status(404).send("State with the given id not found.");

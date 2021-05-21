@@ -1,7 +1,5 @@
 const { Child, validateChild } = require("../models/child");
-const { District, validate } = require("../models/district");
-const { State } = require("../models/state");
-const mongoose = require("mongoose");
+const { District } = require("../models/district");
 const express = require("express");
 
 const router = express.Router();
@@ -21,12 +19,6 @@ router.post("/", async (req, res) => {
 
   const district = await District.findById(req.body.district_id);
   if (!district) return res.status(400).send("Invalid district id.");
-  //   console.log(district);
-
-  const searchedState = await State.findById(
-    mongoose.Types.ObjectId(district.state._id)
-  );
-  //   console.log(searchedState);
 
   let child = new Child({
     district: {
