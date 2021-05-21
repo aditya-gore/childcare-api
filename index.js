@@ -9,6 +9,7 @@ const users = require("./routes/users");
 const auth = require("./routes/auth");
 const express = require("express");
 const app = express();
+app.use("/uploads", express.static("uploads"));
 
 if (!config.get("jwtPrivateKey")) {
   console.error("FATAL ERROR: jwtPrivateKey is not defined.");

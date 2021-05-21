@@ -36,10 +36,10 @@ const childSchema = new mongoose.Schema({
     type: districtSchema,
     required: true,
   },
-  //   image: {
-  //     type: String,
-  //     required: true,
-  //   },
+  image: {
+    type: String,
+    required: true,
+  },
 });
 
 const Child = mongoose.model("Children", childSchema);
@@ -52,6 +52,7 @@ function validateChild(child) {
     father_name: Joi.string().min(2).max(50).required(),
     mother_name: Joi.string().min(2).max(50).required(),
     district_id: Joi.objectId().required(),
+    image: Joi.string().max(1024),
   };
   return Joi.validate(child, schema);
 }
