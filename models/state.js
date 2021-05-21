@@ -1,18 +1,17 @@
 const mongoose = require("mongoose");
 const Joi = require("joi");
 
-const State = mongoose.model(
-  "State",
-  new mongoose.Schema({
-    state_name: {
-      type: String,
-      required: true,
-      uppercase: true,
-      minLength: 2,
-      maxLength: 50,
-    },
-  })
-);
+const stateSchema = new mongoose.Schema({
+  state_name: {
+    type: String,
+    required: true,
+    uppercase: true,
+    minLength: 2,
+    maxLength: 50,
+  },
+});
+
+const State = mongoose.model("State", stateSchema);
 
 // Validate state request-------
 function validateState(state) {
@@ -22,5 +21,6 @@ function validateState(state) {
   return Joi.validate(state, schema);
 }
 
+exports.stateSchema = stateSchema;
 exports.State = State;
 exports.validate = validateState;

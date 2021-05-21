@@ -13,7 +13,7 @@ router.post("/", async (req, res) => {
   if (error) return res.status(404).send(error.details[0].message);
 
   let state = new State({
-    state_name: req.body.name,
+    state_name: req.body.state_name,
   });
   state = await state.save();
   res.send(state);
